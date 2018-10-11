@@ -13,5 +13,11 @@ api.use('/user', user);
 const role = require('./role/roleRouter');
 api.use('/role', role);
 
+// Set /api/finances to use finances
+const finance = require('./finance/financeRouter');
+api.use('/finance', finance);
+
+
+
 // Need to export the api variable for use in app.js.
 module.exports = api;

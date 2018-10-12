@@ -2,7 +2,23 @@
 
 const db = require('../mySql');
 
-// JUST A TEST
+/**
+ * Get all test transactions
+ */
+exports.getCurrentPeriod = function() {
+    return new Promise((resolve, reject) => {
+        db.query('SELECT u.id, pl.user_id, pl.plan_id, pl.amount, pe.* from Users u, Plans pl, Periods pe where u.id = pl.user_id and pl.plan_id = pe.plan_id and pe.finished is false;', function(error, results, fields) {
+            if (error) {
+                reject(error);
+            } else {
+                resolve(results);
+            }
+        })
+    })
+}
+
+
+//#region test methods
 /**
  * Log TEST transaction to database
  * @param {string} amount
@@ -30,7 +46,7 @@ exports.getAllTests = function() {
             } else {
                 resolve(results);
             }
-
         })
     })
 }
+//#endregion

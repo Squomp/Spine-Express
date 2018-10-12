@@ -3,6 +3,29 @@
 const financeModel = require('./financeModel');
 
 /**
+ * Get current period for user
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.getCurrentPeriod = function (req, res) { 
+    financeModel.getCurrentPeriod().then(function (period) {
+        return res.json({
+            'success': true,
+            'data': {
+                'peroidData': period
+            }
+        });
+    }).catch((error) => {
+        return res.status(400).json({
+            'success': false,
+            'message': "Unable to retrieve current period"
+        });
+    })
+}
+
+
+//#region Test calls
+/**
  * log a transaction
  * @param {*} req 
  * @param {*} res 
@@ -50,3 +73,4 @@ exports.getAllTests = function (req, res) {
         });
     })
 }
+//#endregion

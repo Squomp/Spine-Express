@@ -3,7 +3,7 @@ const express = require('express'),
     authController = require('../auth/authController')
     financeController = require('./financeController');
 
-//TEST CALLS
+// TEST CALLS
 // router.get('/logs', authController.loginRequired, financeController.getAllTests);
 // router.post('/log', authController.loginRequired, financeController.logTest);
 

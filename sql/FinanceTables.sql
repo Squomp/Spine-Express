@@ -11,7 +11,7 @@ CREATE UNIQUE INDEX plans_uindex ON Plans (plan_id, user_id);
 
 CREATE TABLE Periods
 (
-    period_id int not null,
+    period_id int not null auto_increment,
     plan_id INT NOT NULL,
     spent DECIMAL(13, 2) NOT NULL,
     remaining DECIMAL(13, 2) NOT NULL,
@@ -27,10 +27,11 @@ CREATE TABLE Transactions
 (
     transaction_id INT NOT NULL AUTO_INCREMENT,
     period_id INT NOT NULL,
-    spent DECIMAL(13, 2) NOT NULL,
-    remaining DECIMAL(13, 2) NOT NULL,
-    start_date DATE,
-    end_date DATE,
+    amount DECIMAL(13, 2) NOT NULL,
+    description varchar(50),
+    day_of_week varchar(10),
+    date DATE,
+    income boolean not null,
     FOREIGN KEY (period_id) REFERENCES Periods(period_id) ON DELETE CASCADE,
     PRIMARY KEY (transaction_id)
 );
@@ -38,9 +39,9 @@ CREATE UNIQUE INDEX transaction_uindex ON Transactions(period_id);
 
 SHOW TABLES;
 
-SELECT * from Transactions;
-SELECT * from Periods;
-SELECT * from Plans;
+# SELECT * from Transactions;
+# SELECT * from Periods;
+# SELECT * from Plans;
 
 # SET FOREIGN_KEY_CHECKS=0;
 # drop table Plans;

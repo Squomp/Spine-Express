@@ -9,13 +9,15 @@ const express = require('express'),
 
 router.get('/current', authController.loginRequired, financeController.getCurrentPeriod);
 
-// router.get('/past', authController.loginRequired, financeController.getPastPeriods);
+router.get('/past', authController.loginRequired, financeController.getPastPeriods);
 
-// router.post('/log', authController.loginRequired, financeController.logTransaction);
+router.get('/plan', authController.loginRequired, financeController.getPlan);
 
-// router.post('/plan', authController.loginRequired, financeController.setPlan);
+router.post('/plan', authController.loginRequired, financeController.savePlan);
 
-// router.get('/plan', authController.loginRequired, financeController.getPlan);
+router.post('/period', authController.loginRequired, financeController.newPeriod);
+
+router.post('/log', authController.loginRequired, financeController.logTransaction);
 
 // Need to export the router variable for use in api.js.
 module.exports = router;

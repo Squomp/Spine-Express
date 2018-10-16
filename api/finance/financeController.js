@@ -8,11 +8,11 @@ const financeModel = require('./financeModel');
  * @param {*} res 
  */
 exports.getCurrentPeriod = function (req, res) { 
-    financeModel.getCurrentPeriod().then(function (period) {
+    financeModel.getCurrentPeriod(req.session.user.id).then(function (period) {
         return res.json({
             'success': true,
             'data': {
-                'peroidData': period
+                'period': period
             }
         });
     }).catch((error) => {
@@ -23,6 +23,124 @@ exports.getCurrentPeriod = function (req, res) {
     })
 }
 
+/**
+ * Get past periods for user
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.getPastPeriods = function (req, res) { 
+    financeModel.getPastPeriods(req.session.user.idw).then(function (periods) {
+        return res.json({
+            'success': true,
+            'data': {
+                'peroids': periods
+            }
+        });
+    }).catch((error) => {
+        return res.status(400).json({
+            'success': false,
+            'message': "Unable to retrieve past periods"
+        });
+    })
+}
+
+/**
+ * Get current plan for user
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.getPlan = function (req, res) { 
+    financeModel.getCurrentPlan(req.session.user.id).then(function (plan) {
+        return res.json({
+            'success': true,
+            'data': {
+                'plan': plan
+            }
+        });
+    }).catch((error) => {
+        return res.status(400).json({
+            'success': false,
+            'message': "Unable to retrieve current plan"
+        });
+    })
+}
+
+/**
+ * set plan for user
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.savePlan = function (req, res) { 
+    if (!req.body.amount || !req.body.period) {
+        return res.status(400).json({
+            'success': false,
+            'message': 'Valid amount and period required.'
+        });
+    }
+
+    financeModel.savePlan(req.session.user.id, req.body.amount, req.body.period).then(function (id) {
+        return res.json({
+            'success': true,
+            'data': {
+                'id': id
+            }
+        });
+    }).catch((error) => {
+        return res.status(400).json({
+            'success': false,
+            'message': "Unable to save plan"
+        });
+    })
+}
+
+/**
+ * save transaction for user
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.logTransaction = function (req, res) { 
+    if (!req.body.periodId || !req.body.amount || !req.body.dayOfWeek || !req.body.date || !req.body.isIncome) {
+        return res.status(400).json({
+            'success': false,
+            'message': 'Valid periodId, amount, date, and isIncome required.'
+        });
+    }
+
+    financeModel.logTransaction(req.body.periodId, req.body.amount, req.body.dayOfWeek, req.body.date, req.body.isIncome).then(function (id) {
+        return res.json({
+            'success': true,
+            'data': {
+                'id': id
+            }
+        });
+    }).catch((error) => {
+        return res.status(400).json({
+            'success': false,
+            'message': "Unable to save transaction"
+        });
+    })
+}
+
+/**
+ * start new period for user
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.newPeriod = function (req, res) { 
+    financeModel.newPeriod(req.session.user.id).then(function (id) {
+        return res.json({
+            'success': true,
+            'data': {
+                'periodId': id
+            }
+        });
+    }).catch((error) => {
+        return res.status(400).json({
+            'success': false,
+            'message': "Unable to start new plan"
+        });
+    })
+}
 
 //#region Test calls
 /**

@@ -19,8 +19,8 @@ Requires user performing request to be logged in
 #### BODY
 Key | Description | Required
 --- | --- | ---
-periodId | period the transaction is apart of | *
 amount | amount of money | *
+description | description for  transaction | *
 dayOfWeek | dayOfWeek | *
 date | date | *
 isIncome | true if money in, false if money out | *

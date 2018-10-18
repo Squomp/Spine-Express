@@ -52,7 +52,7 @@ exports.getCurrentPlan = function(userId) {
  */
 exports.savePlan = function(userId, amount, period) {
     return new Promise((resolve, reject) => {
-        db.query('insert into Plans (user_id, amount, period) values (?, ?, ?);', [userId, amount, period], function(error, results, fields) {
+        db.query('insert into Plans (user_id, amount, period) values (?, ?, ?) ON DUPLICATE KEY UPDATE amount     = VALUES(amount), period = VALUES(period);', [userId, amount, period], function(error, results, fields) {
             if (error) {
                 reject(error);
             } else {
@@ -65,16 +65,16 @@ exports.savePlan = function(userId, amount, period) {
 /**
  * Save transaction for weekly plan  
  */
-exports.logTransaction = function(periodId, amount, description, dayOfWeek, date, isIncome) {
+exports.logTransaction = function(userId, amount, description, dayOfWeek, date, isIncome) {
     return new Promise((resolve, reject) => {
-        db.query('insert into Transactions (period_id, amount, description, day_of_week, date, income) values (?, ?, ?, ?, ?, ?);', 
-        [periodId, amount, description, dayOfWeek, date, isIncome], function(error, results, fields) {
+        db.query('SET @period_id = (select p.period_id from (SELECT pe.* from Plans pl, Periods pe where pl.user_id = ? and pl.plan_id = pe.plan_id and pe.finished is false) as p); insert into Transactions (period_id, amount, description, day_of_week, date, income) values (@period_id, ?, ?, ?, ?, ?);', 
+        [userId, amount, description, dayOfWeek, date, isIncome], function(error, results, fields) {
             if (error) {
                 reject(error);
             } else {
                 if (isIncome) {
                     db.query('update Periods set remaining = remaining + ? where period_id = ?;', 
-                    [amount, periodId], function(error, results, fields) {
+                    [amount, results.insertId], function(error, results, fields) {
                             if (error) {
                                 reject(error);
                             }
@@ -82,7 +82,7 @@ exports.logTransaction = function(periodId, amount, description, dayOfWeek, date
                     );
                 } else {
                     db.query('update Periods set spent = spent + ?, remaining = remaining - ? where period_id = ?;', 
-                    [amount, amount, periodId], function(error, results, fields) {
+                    [amount, amount, results.insertId], function(error, results, fields) {
                             if (error) {
                                 reject(error);
                             }
@@ -100,8 +100,9 @@ exports.logTransaction = function(periodId, amount, description, dayOfWeek, date
  */
 exports.newPeriod = function(userId) {
     return new Promise((resolve, reject) => {
-        db.query('SET @plan_id := (SELECT plan_id from Plans where user_id = ?); SET @plan_amount := (SELECT amount from Plans where user_id = ?); insert into Periods (plan_id, spent, remaining, finished) values (@plan_id, 0.00, @plan_amount, false);', [userId, userId], function(error, results, fields) {
+        db.query('SET @plan_id := (SELECT plan_id from Plans where user_id = ?); SET @plan_amount := (SELECT amount from Plans where user_id = ?); UPDATE Periods set finished = true where plan_id = @plan_id and finished = false; insert into Periods (plan_id, spent, remaining, finished) values (@plan_id, 0.00, @plan_amount, false);', [userId, userId], function(error, results, fields) {
             if (error) {
+                console.log(error);
                 reject(error);
             } else {
                 resolve(results.insertId);

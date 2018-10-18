@@ -99,14 +99,14 @@ exports.savePlan = function (req, res) {
  * @param {*} res 
  */
 exports.logTransaction = function (req, res) { 
-    if (!req.body.periodId || !req.body.amount || !req.body.dayOfWeek || !req.body.date || !req.body.isIncome) {
+    if (!req.session.user.id || !req.body.amount || !req.body.description || !req.body.dayOfWeek || !req.body.date || !req.body.isIncome) {
         return res.status(400).json({
             'success': false,
-            'message': 'Valid periodId, amount, date, and isIncome required.'
+            'message': 'Valid amount, description, dayOfWeek, date, and isIncome required.'
         });
     }
 
-    financeModel.logTransaction(req.body.periodId, req.body.amount, req.body.dayOfWeek, req.body.date, req.body.isIncome).then(function (id) {
+    financeModel.logTransaction(req.session.user.id, req.body.amount, req.body.description, req.body.dayOfWeek, req.body.date, req.body.isIncome).then(function (id) {
         return res.json({
             'success': true,
             'data': {
@@ -137,7 +137,7 @@ exports.newPeriod = function (req, res) {
     }).catch((error) => {
         return res.status(400).json({
             'success': false,
-            'message': "Unable to start new plan"
+            'message': "Unable to start new period"
         });
     })
 }

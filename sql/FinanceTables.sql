@@ -7,7 +7,7 @@ CREATE TABLE Plans
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
     PRIMARY KEY (plan_id)
 );
-CREATE UNIQUE INDEX plans_uindex ON Plans (plan_id, user_id);
+CREATE UNIQUE INDEX plans_uindex ON Plans (user_id);
 
 CREATE TABLE Periods
 (
@@ -30,7 +30,7 @@ CREATE TABLE Transactions
     amount DECIMAL(13, 2) NOT NULL,
     description varchar(50),
     day_of_week varchar(10),
-    date DATE,
+    date varchar(100),
     income boolean not null,
     FOREIGN KEY (period_id) REFERENCES Periods(period_id) ON DELETE CASCADE,
     PRIMARY KEY (transaction_id)

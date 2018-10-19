@@ -32,18 +32,21 @@ ON DUPLICATE KEY UPDATE
   period = VALUES(period);
 
 # save transaction
-SET @period_id = (select p.period_id from (SELECT pe.*
-  from Plans pl, Periods pe
-  where pl.user_id = ?
-    and pl.plan_id = pe.plan_id
-    and pe.finished is false) as p);
+SET @period_id =
+  (select p.period_id from
+      (SELECT pe.*
+      from Plans pl, Periods pe
+      where pl.user_id = ?
+        and pl.plan_id = pe.plan_id
+        and pe.finished is false)
+  as p);
 insert into Transactions (period_id, amount, description, day_of_week, date, income)
   values (@period_id, ?, ?, ?, ?, ?);
 
 # update period spent and remaining after transaction saved for SPENT
 update Periods
-  set 'spent' = spent + ?,
-      'remaining' = remaining - ?
+  set spent = spent + ?,
+      remaining = remaining - ?
   where period_id = ?;
 
 # update period spent and remaining after transaction saved for RECIEVED

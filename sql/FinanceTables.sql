@@ -35,7 +35,6 @@ CREATE TABLE Transactions
     FOREIGN KEY (period_id) REFERENCES Periods(period_id) ON DELETE CASCADE,
     PRIMARY KEY (transaction_id)
 );
-CREATE UNIQUE INDEX transaction_uindex ON Transactions(period_id);
 
 SHOW TABLES;
 
@@ -46,5 +45,5 @@ SHOW TABLES;
 # SET FOREIGN_KEY_CHECKS=0;
 # drop table Plans;
 # drop table Periods;
-# drop table Transactions;
+drop table Transactions;
 # SET FOREIGN_KEY_CHECKS=1;

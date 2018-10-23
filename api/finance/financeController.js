@@ -29,11 +29,11 @@ exports.getCurrentPeriod = function (req, res) {
  * @param {*} res 
  */
 exports.getPastPeriods = function (req, res) { 
-    financeModel.getPastPeriods(req.session.user.idw).then(function (periods) {
+    financeModel.getPastPeriods(req.session.user.id).then(function (periods) {
         return res.json({
             'success': true,
             'data': {
-                'peroids': periods
+                'periods': periods
             }
         });
     }).catch((error) => {
@@ -99,7 +99,7 @@ exports.savePlan = function (req, res) {
  * @param {*} res 
  */
 exports.logTransaction = function (req, res) { 
-    if (!req.session.user.id || !req.body.amount || !req.body.description || !req.body.dayOfWeek || !req.body.date || !req.body.isIncome) {
+    if (!req.body.amount || !req.body.description || !req.body.dayOfWeek || !req.body.date) {
         return res.status(400).json({
             'success': false,
             'message': 'Valid amount, description, dayOfWeek, date, and isIncome required.'

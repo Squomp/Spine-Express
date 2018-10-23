@@ -32,16 +32,12 @@ ON DUPLICATE KEY UPDATE
   period = VALUES(period);
 
 # save transaction
-SET @period_id =
-  (select p.period_id from
-      (SELECT pe.*
+insert into Transactions (period_id, amount, description, day_of_week, date, income)
+  values ((SELECT pe.period_id
       from Plans pl, Periods pe
       where pl.user_id = ?
         and pl.plan_id = pe.plan_id
-        and pe.finished is false)
-  as p);
-insert into Transactions (period_id, amount, description, day_of_week, date, income)
-  values (@period_id, ?, ?, ?, ?, ?);
+        and pe.finished is false), ?, ?, ?, ?, ?);
 
 # update period spent and remaining after transaction saved for SPENT
 update Periods
@@ -49,14 +45,30 @@ update Periods
       remaining = remaining - ?
   where period_id = ?;
 
-# update period spent and remaining after transaction saved for RECIEVED
+# update period spent and remaining after transaction saved for RECEIVED
 update Periods
-  set 'remaining' = remaining + ?
+  set remaining = remaining + ?
   where period_id = ?;
 
 # new period
-SET @plan_id := (SELECT plan_id from Plans where user_id = ?);
-SET @plan_amount := (SELECT amount from Plans where user_id = ?);
-UPDATE Periods set finished = true where plan_id = @plan_id and finished = false;
-insert into Periods (plan_id, spent, remaining, finished) values (@plan_id, 0.00, @plan_amount, false);
+start transaction;
+UPDATE Periods, Plans
+set Periods.finished = true
+where Plans.user_id = ?
+  and Periods.plan_id = Plans.plan_id
+  and finished = false;
+insert into Periods (plan_id, spent, remaining, finished)
+  values ((select plan_id
+            from Plans
+            where user_id = ?),
+          0.00,
+          (select amount
+            from Plans
+            where user_id = ?),
+          false);
+rollback;
 
+
+delete from Transactions where period_id=9;
+
+update Periods set remaining = 70 where period_id=9

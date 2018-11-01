@@ -66,6 +66,33 @@ exports.getPlan = function (req, res) {
 }
 
 /**
+ * Get transactions for current period
+ * @param {*} req 
+ * @param {*} res 
+ */
+exports.getTransactions = function (req, res) { 
+    if (!req.body.periodId) {
+        return res.status(400).json({
+            'success': false,
+            'message': 'Valid periodId required.'
+        });
+    }
+    financeModel.getTransactions(req.body.periodId).then(function (transactions) {
+        return res.json({
+            'success': true,
+            'data': {
+                'transactions': transactions
+            }
+        });
+    }).catch((error) => {
+        return res.status(400).json({
+            'success': false,
+            'message': "Unable to retrieve transactions"
+        });
+    })
+}
+
+/**
  * set plan for user
  * @param {*} req 
  * @param {*} res 

@@ -71,4 +71,10 @@ rollback;
 
 delete from Transactions where period_id=9;
 
-update Periods set remaining = 70 where period_id=9
+update Periods set remaining = 70 where period_id=9;
+delete from Periods where period_id < 10;
+
+
+select P.start_date, P.end_date, Transactions.* from Transactions
+  left join Periods P on Transactions.period_id = P.period_id
+  where Transactions.period_id = ?;

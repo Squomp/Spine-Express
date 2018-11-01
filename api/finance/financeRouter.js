@@ -13,6 +13,8 @@ router.get('/past', authController.loginRequired, financeController.getPastPerio
 
 router.get('/plan', authController.loginRequired, financeController.getPlan);
 
+router.post('/transactions', authController.loginRequired, financeController.getTransactions);
+
 router.post('/plan', authController.loginRequired, financeController.savePlan);
 
 router.post('/period', authController.loginRequired, financeController.newPeriod);

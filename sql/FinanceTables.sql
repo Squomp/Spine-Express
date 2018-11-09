@@ -4,6 +4,7 @@ CREATE TABLE Plans
     user_id INT NOT NULL,
     amount DECIMAL(13, 2) NOT NULL,
     period varchar(10),
+    first_day varchar(10),
     FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
     PRIMARY KEY (plan_id)
 );

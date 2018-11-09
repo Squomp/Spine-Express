@@ -22,7 +22,7 @@ exports.getCurrentPeriod = function (userId) {
  */
 exports.getPastPeriods = function (userId) {
     return new Promise((resolve, reject) => {
-        db.query('SELECT pl.user_id, pl.plan_id, pe.* from Plans pl, Periods pe where pl.user_id = ? and pl.plan_id = pe.plan_id and pe.finished is true order by pe.end_date;', [userId], function (error, results, fields) {
+        db.query('SELECT pl.user_id, pl.plan_id, pe.* from Plans pl, Periods pe where pl.user_id = ? and pl.plan_id = pe.plan_id and pe.finished is true order by pe.end_date desc;', [userId], function (error, results, fields) {
             if (error) {
                 reject(error);
             } else {
@@ -65,9 +65,9 @@ exports.getTransactions = function (periodId) {
 /**
  * Save current plan
  */
-exports.savePlan = function (userId, amount, period) {
+exports.savePlan = function (userId, amount, period, firstDay) {
     return new Promise((resolve, reject) => {
-        db.query('insert into Plans (user_id, amount, period) values (?, ?, ?) ON DUPLICATE KEY UPDATE amount     = VALUES(amount), period = VALUES(period);', [userId, amount, period], function (error, results, fields) {
+        db.query('insert into Plans (user_id, amount, period, first_day) values (?, ?, ?, ?) ON DUPLICATE KEY UPDATE amount = VALUES(amount), period = VALUES(period), first_day = VALUES(first_day);', [userId, amount, period, firstDay], function (error, results, fields) {
             if (error) {
                 reject(error);
             } else {

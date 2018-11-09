@@ -1,7 +1,9 @@
 
+select * from Users;
 select * from Periods;
 select * from Plans;
 select * from Transactions;
+
 
 # get current period
 SELECT pl.user_id, pl.plan_id, pe.*

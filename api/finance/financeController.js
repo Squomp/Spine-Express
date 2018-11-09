@@ -98,14 +98,14 @@ exports.getTransactions = function (req, res) {
  * @param {*} res 
  */
 exports.savePlan = function (req, res) { 
-    if (!req.body.amount || !req.body.period) {
+    if (!req.body.amount || !req.body.period || !req.body.firstDay) {
         return res.status(400).json({
             'success': false,
             'message': 'Valid amount and period required.'
         });
     }
 
-    financeModel.savePlan(req.session.user.id, req.body.amount, req.body.period).then(function (id) {
+    financeModel.savePlan(req.session.user.id, req.body.amount, req.body.period, req.body.firstDay).then(function (id) {
         return res.json({
             'success': true,
             'data': {

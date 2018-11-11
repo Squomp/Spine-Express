@@ -53,22 +53,18 @@ update Periods
   where period_id = ?;
 
 # new period
-start transaction;
 UPDATE Periods, Plans
-set Periods.finished = true
-where Plans.user_id = ?
-  and Periods.plan_id = Plans.plan_id
-  and finished = false;
-insert into Periods (plan_id, spent, remaining, finished)
-  values ((select plan_id
-            from Plans
-            where user_id = ?),
+  set Periods.finished = true
+  where Plans.user_id = ?
+    and Periods.plan_id = Plans.plan_id
+    and finished = false;
+insert into Periods (plan_id, spent, remaining, start_date, end_date, finished)
+  values ((select plan_id from Plans where user_id = ?),
           0.00,
-          (select amount
-            from Plans
-            where user_id = ?),
+          (select amount from Plans where user_id = ?),
+          ?,
+          ?,
           false);
-rollback;
 
 
 delete from Transactions where period_id=9;

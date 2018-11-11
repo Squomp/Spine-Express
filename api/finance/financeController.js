@@ -154,7 +154,15 @@ exports.logTransaction = function (req, res) {
  * @param {*} res 
  */
 exports.newPeriod = function (req, res) { 
-    financeModel.newPeriod(req.session.user.id).then(function (id) {
+
+    if (!req.body.start_date || !req.body.end_date) {
+        return res.status(400).json({
+            'success': false,
+            'message': 'Valid start_date and end_date required.'
+        });
+    }
+
+    financeModel.newPeriod(req.session.user.id, req.body.start_date, req.body.end_date).then(function (id) {
         return res.json({
             'success': true,
             'data': {

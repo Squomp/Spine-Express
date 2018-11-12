@@ -5,6 +5,17 @@ select * from Plans;
 select * from Transactions;
 
 
+Alter table Periods
+    add column amount DECIMAL(13, 2) not null;
+
+alter table Periods
+    drop foreign key Periods_ibfk_1;
+
+alter table Periods
+    drop column plan_id;
+
+update Periods set finished=0 where period_id = 16;
+
 # get current period
 SELECT pl.user_id, pl.plan_id, pe.*
   from Plans pl, Periods pe

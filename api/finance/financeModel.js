@@ -7,7 +7,7 @@ const db = require('../mySql');
  */
 exports.getCurrentPeriod = function (userId) {
     return new Promise((resolve, reject) => {
-        db.query('SELECT pl.user_id, pl.plan_id, pl.amount, pe.* from Plans pl, Periods pe where pl.user_id = ? and pl.plan_id = pe.plan_id and pe.finished is false;', [userId], function (error, results, fields) {
+        db.query('SELECT pl.user_id, pl.amount, pe.* from Plans pl, Periods pe where pl.user_id = ? and pe.finished is false;', [userId], function (error, results, fields) {
             if (error) {
                 reject(error);
             } else {
@@ -123,7 +123,7 @@ exports.logTransaction = function (userId, amount, description, dayOfWeek, date,
 /**
  * start new period
  */
-exports.newPeriod = function (userId, startDate, endDate) {
+exports.newPeriod = function (userId, startDate, endDate, amount) {
     return new Promise((resolve, reject) => {
         db.query('UPDATE Periods, Plans set Periods.finished = true where Plans.user_id = ? and Periods.plan_id = Plans.plan_id and finished = false;'
             , [userId], function (error, results, fields) {
@@ -131,8 +131,8 @@ exports.newPeriod = function (userId, startDate, endDate) {
                     console.log(error);
                     reject(error);
                 } else {
-                    db.query('insert into Periods (plan_id, spent, remaining, start_date, end_date, finished) values ((select plan_id from Plans where user_id = ?), 0.00, (select amount from Plans where user_id = ?), ?, ?, false);'
-                        , [userId, userId, startDate, endDate], function (error, resutls, fields) {
+                    db.query('insert into Periods (spent, remaining, start_date, end_date, finished, amount) values (0.00, (select amount from Plans where user_id = ?), ?, ?, false, ?);'
+                        , [userId, startDate, endDate, amount], function (error, resutls, fields) {
                             if (error) {
                                 console.log(error);
                                 reject(error);

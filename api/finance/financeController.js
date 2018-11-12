@@ -155,14 +155,14 @@ exports.logTransaction = function (req, res) {
  */
 exports.newPeriod = function (req, res) { 
 
-    if (!req.body.start_date || !req.body.end_date) {
+    if (!req.body.start_date || !req.body.end_date || !req.body.amount) {
         return res.status(400).json({
             'success': false,
             'message': 'Valid start_date and end_date required.'
         });
     }
 
-    financeModel.newPeriod(req.session.user.id, req.body.start_date, req.body.end_date).then(function (id) {
+    financeModel.newPeriod(req.session.user.id, req.body.start_date, req.body.end_date, req.body.amount).then(function (id) {
         return res.json({
             'success': true,
             'data': {

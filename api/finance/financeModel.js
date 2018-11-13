@@ -7,7 +7,7 @@ const db = require('../mySql');
  */
 exports.getCurrentPeriod = function (userId) {
     return new Promise((resolve, reject) => {
-        db.query('SELECT pl.user_id, pl.amount, pe.* from Plans pl, Periods pe where pl.user_id = ? and pe.finished is false;', [userId], function (error, results, fields) {
+        db.query('SELECT * from Periods where user_id = ? and finished is false;', [userId], function (error, results, fields) {
             if (error) {
                 reject(error);
             } else {
@@ -22,7 +22,7 @@ exports.getCurrentPeriod = function (userId) {
  */
 exports.getPastPeriods = function (userId) {
     return new Promise((resolve, reject) => {
-        db.query('SELECT pl.user_id, pl.plan_id, pe.* from Plans pl, Periods pe where pl.user_id = ? and pl.plan_id = pe.plan_id and pe.finished is true order by pe.end_date desc;', [userId], function (error, results, fields) {
+        db.query('SELECT * from Periods  where user_id = ? and finished is true order by end_date desc;', [userId], function (error, results, fields) {
             if (error) {
                 reject(error);
             } else {
@@ -52,7 +52,7 @@ exports.getCurrentPlan = function (userId) {
  */
 exports.getTransactions = function (periodId) {
     return new Promise((resolve, reject) => {
-        db.query('select P.start_date, P.end_date, Transactions.* from Transactions left join Periods P on Transactions.period_id = P.period_id where Transactions.period_id = ?;', [periodId], function (error, results, fields) {
+        db.query('select P.start_date, P.end_date, Transactions.* from Transactions left join Periods P on Transactions.period_id = P.period_id where Transactions.period_id = ? order by Transactions.date desc;', [periodId], function (error, results, fields) {
             if (error) {
                 reject(error);
             } else {
@@ -83,7 +83,7 @@ exports.savePlan = function (userId, amount, period, firstDay) {
 exports.logTransaction = function (userId, amount, description, dayOfWeek, date, isIncome) {
     return new Promise((resolve, reject) => {
         const income = isIncome === 'true' ? 1 : 0;
-        db.query('insert into Transactions (period_id, amount, description, day_of_week, date, income) values ((SELECT pe.period_id from Plans pl, Periods pe where pl.user_id = ? and pl.plan_id = pe.plan_id and pe.finished is false limit 1), ?, ?, ?, ?, ?)',
+        db.query('insert into Transactions (period_id, amount, description, day_of_week, date, income) values ((SELECT period_id from Periods where user_id = ? and finished is false limit 1), ?, ?, ?, ?, ?)',
             [userId, amount, description, dayOfWeek, date, income], function (error, results, fields) {
                 if (error) {
                     reject(error);
@@ -125,14 +125,14 @@ exports.logTransaction = function (userId, amount, description, dayOfWeek, date,
  */
 exports.newPeriod = function (userId, startDate, endDate, amount) {
     return new Promise((resolve, reject) => {
-        db.query('UPDATE Periods, Plans set Periods.finished = true where Plans.user_id = ? and Periods.plan_id = Plans.plan_id and finished = false;'
+        db.query('UPDATE Periods set finished = true where user_id = ? and finished = false;'
             , [userId], function (error, results, fields) {
                 if (error) {
                     console.log(error);
                     reject(error);
                 } else {
-                    db.query('insert into Periods (spent, remaining, start_date, end_date, finished, amount) values (0.00, (select amount from Plans where user_id = ?), ?, ?, false, ?);'
-                        , [userId, startDate, endDate, amount], function (error, resutls, fields) {
+                    db.query('insert into Periods (user_id, amount, spent, remaining, start_date, end_date, finished) values (?, ?, 0.00, ?, ?, ?, false);'
+                        , [userId, amount, amount, startDate, endDate], function (error, resutls, fields) {
                             if (error) {
                                 console.log(error);
                                 reject(error);

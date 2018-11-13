@@ -16,6 +16,9 @@ alter table Periods
 
 update Periods set finished=0 where period_id = 16;
 
+insert into Periods (user_id, amount, spent, remaining, start_date, end_date, finished)
+  values (4, 100, 0, 100, '2018-11-13', '2018-11-20', 0);
+
 # get current period
 SELECT pl.user_id, pl.plan_id, pe.*
   from Plans pl, Periods pe

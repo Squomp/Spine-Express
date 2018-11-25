@@ -4,6 +4,7 @@ select * from Periods;
 select * from Plans;
 select * from Transactions;
 
+delete from Users where username = 'Demo';
 
 Alter table Periods
     add column amount DECIMAL(13, 2) not null;

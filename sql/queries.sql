@@ -1,10 +1,20 @@
 
 select * from Users;
 select * from Periods;
-select * from Plans;
 select * from Transactions;
+select * from Plans;
 
 delete from Users where username = 'Demo';
+
+update Periods set start_date = '2018-11-25', end_date = '2018-12-01' where period_id = 11;
+
+delete from Transactions where transaction_id = 20;
+
+insert into Periods (user_id, amount, spent, remaining, start_date, end_date, finished)
+  VALUES (11, 50, 40, 10, '2018-11-25', '2018-12-01', 1);
+
+insert into Transactions (period_id, amount, description, day_of_week, date, income)
+  values (16, 10, 'dinner', 'monday', '2018-11-28', 0);
 
 Alter table Periods
     add column amount DECIMAL(13, 2) not null;

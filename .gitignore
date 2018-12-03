@@ -65,3 +65,4 @@ chrome-user-data
 .vscode
 *.swp
 *.swo
+sql/queries.sql

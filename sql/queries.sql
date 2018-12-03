@@ -8,7 +8,7 @@ delete from Users where username = 'Demo';
 
 update Periods set start_date = '2018-11-25', end_date = '2018-12-01' where period_id = 11;
 
-delete from Transactions where transaction_id = 20;
+delete from Transactions where transaction_id = 34;
 
 insert into Periods (user_id, amount, spent, remaining, start_date, end_date, finished)
   VALUES (11, 50, 40, 10, '2018-11-25', '2018-12-01', 1);
